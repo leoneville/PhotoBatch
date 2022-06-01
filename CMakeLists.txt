@@ -9,4 +9,6 @@ target_sources(
 		ArgumentParser.cpp
 		ArgumentParser.hpp
 		PhotoBatch.cpp
+		Utils.cpp
+		Utils.hpp
 )

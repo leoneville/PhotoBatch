@@ -1,15 +1,7 @@
 #include <algorithm>
 
 #include "ArgumentParser.hpp"
-
-
-std::string ToLower(std::string str)
-{
-	std::transform(std::begin(str), std::end(str), std::begin(str),
-		[](unsigned char c) { return std::tolower(c); });
-
-	return str;
-}
+#include "Utils.hpp"
 
 
 void ArgumentParser::RegisterFlag(const std::string& flag)
@@ -24,7 +16,6 @@ void ArgumentParser::RegisterFlag(const std::string& flag)
 	}
 }
 
-// método para retornar o valor da flag
 bool ArgumentParser::GetFlag(const std::string& flag) const
 {
 	// if the flag argument is not empty...
@@ -51,7 +42,7 @@ void ArgumentParser::Parse(int argc, char* argv[])
 	{
 		for (auto i = 1; i < argc; ++i)
 		{
-			std::string arg = ToLower(argv[i]);
+			std::string arg = Utils::ToLower(argv[i]);
 
 			if (arg.length() >= 3 && (arg[0] == '-' && arg[1] == '-'))
 			{
@@ -64,7 +55,7 @@ void ArgumentParser::Parse(int argc, char* argv[])
 
 				// Depois do arg.substr: "rename"
 
-				// verifica sem o arg possui o caracter '='
+				// verifica se o arg possui o caracter '='
 				if (arg.find_first_of('=') != std::string::npos)
 				{
 					// é uma opção

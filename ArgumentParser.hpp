@@ -1,7 +1,4 @@
 #pragma once
-#ifndef ARGUMENT_PARSER_HPP
-#define ARGUMENT_PARSER_HPP
-
 
 #include <string>
 #include <map>
@@ -31,6 +28,3 @@ public:
 private:
 	std::map<std::string, bool> m_Flags;
 };
-
-
-#endif
