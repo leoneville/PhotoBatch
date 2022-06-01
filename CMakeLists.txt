@@ -6,5 +6,7 @@ add_executable(PhotoBatch)
 target_sources(
 	PhotoBatch
 	PRIVATE
+		ArgumentParser.cpp
+		ArgumentParser.hpp
 		PhotoBatch.cpp
 )
