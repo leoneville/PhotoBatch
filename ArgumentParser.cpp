@@ -16,6 +16,14 @@ void ArgumentParser::RegisterFlag(const std::string& flag)
 	}
 }
 
+void ArgumentParser::RegisterOption(const std::string& option)
+{
+	if (!option.empty())
+	{
+		this->m_Options[option] = "";
+	}
+}
+
 bool ArgumentParser::GetFlag(const std::string& flag) const
 {
 	// if the flag argument is not empty...
@@ -34,6 +42,46 @@ bool ArgumentParser::GetFlag(const std::string& flag) const
 
 	// se não achou a chave no map, retorne false!
 	return false;
+}
+
+const std::string& ArgumentParser::GetOption(const std::string& option) const
+{
+	if (!option.empty())
+	{
+		auto optionIt = this->m_Options.find(option);
+
+		if (optionIt != std::end(this->m_Options))
+		{
+			return optionIt->second;
+		}
+	}
+
+	static std::string EmptyOption = "";
+	return EmptyOption;
+}
+
+float ArgumentParser::GetOptionAsFloat(const std::string& option) const
+{
+	auto optionValue = GetOption(option);
+
+	if (!optionValue.empty())
+	{
+		return std::stof(optionValue);
+	}
+
+	return -1;
+}
+
+int ArgumentParser::GetOptionAsInt(const std::string& option) const
+{
+	auto optionValue = GetOption(option);
+
+	if (!optionValue.empty())
+	{
+		return std::stoi(optionValue);
+	}
+
+	return -1;
 }
 
 void ArgumentParser::Parse(int argc, char* argv[])
@@ -59,6 +107,20 @@ void ArgumentParser::Parse(int argc, char* argv[])
 				if (arg.find_first_of('=') != std::string::npos)
 				{
 					// é uma opção
+					const auto equalSignPos = arg.find('=');
+					if (equalSignPos != std::string::npos)
+					{
+						// Dividir a opção em chave e valor
+						std::string optionName = arg.substr(0, equalSignPos);
+						std::string optionValue = arg.substr(equalSignPos + 1);
+
+						auto optionIt = this->m_Options.find(optionName);
+						if (optionIt != std::end(this->m_Options))
+						{
+							// Achamos uma opção registrada
+							optionIt->second = optionValue;
+						}
+					}
 				}
 				else
 				{
