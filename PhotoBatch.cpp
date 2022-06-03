@@ -1,8 +1,10 @@
-#include "ArgumentParser.hpp"
-
 #include <array>
+#include <filesystem>
 #include <iomanip>
 #include <iostream>
+
+#include "ArgumentParser.hpp"
+
 
 namespace Args 
 {
@@ -12,6 +14,12 @@ namespace Args
 		static constexpr const char* Convert = "convert";
 		static constexpr const char* Resize = "resize";
 		static constexpr const char* Scale = "scale";
+	}
+
+	namespace Options 
+	{
+		static constexpr const char* Folder = "folder";
+		static constexpr const char* Filter = "filter";
 	}
 }
 
@@ -33,6 +41,31 @@ void ValidateArguments(const ArgumentParser& argParser)
 		// se houver mais de um modo ativo, lança uma exceção.
 		throw std::invalid_argument("Somente um modo pode estar ativo!");
 	}
+
+	// Validar a pasta passada como a opção Folder
+	const auto folder = argParser.GetOptionAs<const std::string&>(Args::Options::Folder);
+
+	if (folder.empty())
+	{
+		throw std::invalid_argument("A pasta não pode estar em branco");
+	}
+
+	if (!std::filesystem::exists(folder))
+	{
+		throw std::invalid_argument("A pasta informada não existe!");
+	}
+
+	// Validar se o filtro é uma string válida
+	const auto filter = argParser.GetOptionAs<const std::string&>(Args::Options::Filter);
+
+	if (!filter.empty())
+	{
+		const auto invalidCharacters = std::string{ "\\/*?\"<>|:" };
+		if (filter.find_first_of(invalidCharacters) != std::string::npos)
+		{
+			throw std::invalid_argument("O filtro não pode conter nenhum dos seguintes caracteres: " + invalidCharacters);
+		}
+	}
 }
 
 int main(int argc, char* argv[])
@@ -45,13 +78,14 @@ int main(int argc, char* argv[])
 	argParser.RegisterFlag(Args::Flags::Convert);
 	argParser.RegisterFlag(Args::Flags::Resize);
 	argParser.RegisterFlag(Args::Flags::Scale);
+	argParser.RegisterOption(Args::Options::Folder);
+	argParser.RegisterOption(Args::Options::Filter);
 
 	argParser.Parse(argc, argv);
 
 	try
 	{
 		ValidateArguments(argParser);
-		std::cout << "Não deu erro";
 	}
 	catch (const std::exception& exception)
 	{

@@ -12,3 +12,5 @@ target_sources(
 		Utils.cpp
 		Utils.hpp
 )
+
+set_target_properties(PhotoBatch PROPERTIES CXX_STANDARD 17)
