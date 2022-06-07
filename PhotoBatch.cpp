@@ -20,6 +20,8 @@ namespace Args
 	{
 		static constexpr const char* Folder = "folder";
 		static constexpr const char* Filter = "filter";
+		static constexpr const char* Width = "width";
+		static constexpr const char* Height = "height";
 	}
 }
 
@@ -66,6 +68,33 @@ void ValidateArguments(const ArgumentParser& argParser)
 			throw std::invalid_argument("O filtro não pode conter nenhum dos seguintes caracteres: " + invalidCharacters);
 		}
 	}
+
+	// Validar o modo resize
+	if (bResizeMode)
+	{
+		auto width = 0, height = 0;
+
+		try
+		{
+			width = argParser.GetOptionAs<int>(Args::Options::Width);
+			height = argParser.GetOptionAs<int>(Args::Options::Height);
+		}
+		catch (const std::invalid_argument& exception)
+		{
+			throw std::invalid_argument("O valor informado para Width ou Height não são números válidos.");
+		}
+
+		// No modo resize, o comprimento e a altura devem ser maiores que 0
+		if (width <= 0 || height <= 0)
+		{
+			throw std::invalid_argument("Width e Height devem ser maiores que zero");
+		}
+
+		if (filter.empty())
+		{
+			throw std::invalid_argument("Filter não pode estar em branco no modo Resize");
+		}
+	}
 }
 
 int main(int argc, char* argv[])
@@ -80,6 +109,8 @@ int main(int argc, char* argv[])
 	argParser.RegisterFlag(Args::Flags::Scale);
 	argParser.RegisterOption(Args::Options::Folder);
 	argParser.RegisterOption(Args::Options::Filter);
+	argParser.RegisterOption(Args::Options::Width);
+	argParser.RegisterOption(Args::Options::Height);
 
 	argParser.Parse(argc, argv);
 
