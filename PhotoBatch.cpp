@@ -24,7 +24,21 @@ namespace Args
 		static constexpr const char* Width = "width";
 		static constexpr const char* Height = "height";
 		static constexpr const char* Amount = "amount";
+		static constexpr const char* Prefix = "prefix";
+		static constexpr const char* StartNumber = "startnumber";
 	}
+}
+
+const std::string& GetInvalidChars()
+{
+	static const auto invalidCharacters = std::string{ "\\/*?\"<>|:" };
+	return invalidCharacters;
+}
+
+bool HasInvalidChars(const std::string& str)
+{
+	const auto bHasInvalidChars = str.find_first_of(GetInvalidChars()) != std::string::npos;
+	return bHasInvalidChars;
 }
 
 void ValidateArguments(const ArgumentParser& argParser)
@@ -62,13 +76,9 @@ void ValidateArguments(const ArgumentParser& argParser)
 	// Validar se o filtro é uma string válida
 	const auto filter = argParser.GetOptionAs<const std::string&>(Args::Options::Filter);
 
-	if (!filter.empty())
+	if (!filter.empty() && HasInvalidChars(filter))
 	{
-		const auto invalidCharacters = std::string{ "\\/*?\"<>|:" };
-		if (filter.find_first_of(invalidCharacters) != std::string::npos)
-		{
-			throw std::invalid_argument("O filtro não pode conter nenhum dos seguintes caracteres: " + invalidCharacters);
-		}
+		throw std::invalid_argument("O filtro não pode conter nenhum dos seguintes caracteres: " + GetInvalidChars());
 	}
 
 	// Validar o modo resize
@@ -126,6 +136,33 @@ void ValidateArguments(const ArgumentParser& argParser)
 			throw std::invalid_argument("Filter não pode estar em branco no modo Scale");
 		}
 	}
+
+	// Validar o modo Rename
+	if (bRenameMode)
+	{
+		auto startNumber = -1;
+
+		try
+		{
+			startNumber = argParser.GetOptionAs<int>(Args::Options::StartNumber);
+		}
+		catch (const std::invalid_argument&)
+		{
+			throw std::invalid_argument("O valor informado para StartNumber não é um número válido");
+		}
+
+		auto prefix = argParser.GetOptionAs<const std::string&>(Args::Options::Prefix);
+
+		if (startNumber < 0)
+		{
+			throw std::invalid_argument("StartNumber deve ser maior ou igual a zero");
+		}
+
+		if (prefix.empty() || HasInvalidChars(prefix))
+		{
+			throw std::invalid_argument("Prefix não pode estar em branco e não pode conter os seguintes caracteres: " + GetInvalidChars());
+		}
+	}
 }
 
 int main(int argc, char* argv[])
@@ -134,15 +171,21 @@ int main(int argc, char* argv[])
 	setlocale(LC_NUMERIC, "en_US");
 
 	auto argParser = ArgumentParser{};
+
+	// Registra as flags do PhotoBatch
 	argParser.RegisterFlag(Args::Flags::Rename);
 	argParser.RegisterFlag(Args::Flags::Convert);
 	argParser.RegisterFlag(Args::Flags::Resize);
 	argParser.RegisterFlag(Args::Flags::Scale);
+
+	// Registra as options do PhotoBatch
 	argParser.RegisterOption(Args::Options::Folder);
 	argParser.RegisterOption(Args::Options::Filter);
 	argParser.RegisterOption(Args::Options::Width);
 	argParser.RegisterOption(Args::Options::Height);
 	argParser.RegisterOption(Args::Options::Amount);
+	argParser.RegisterOption(Args::Options::Prefix);
+	argParser.RegisterOption(Args::Options::StartNumber);
 
 	argParser.Parse(argc, argv);
 
