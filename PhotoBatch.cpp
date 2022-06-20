@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <iomanip>
 #include <iostream>
+#include <exception>
 
 #include "ArgumentParser.hpp"
 
@@ -22,6 +23,7 @@ namespace Args
 		static constexpr const char* Filter = "filter";
 		static constexpr const char* Width = "width";
 		static constexpr const char* Height = "height";
+		static constexpr const char* Amount = "amount";
 	}
 }
 
@@ -79,7 +81,7 @@ void ValidateArguments(const ArgumentParser& argParser)
 			width = argParser.GetOptionAs<int>(Args::Options::Width);
 			height = argParser.GetOptionAs<int>(Args::Options::Height);
 		}
-		catch (const std::invalid_argument& exception)
+		catch (const std::invalid_argument&)
 		{
 			throw std::invalid_argument("O valor informado para Width ou Height não são números válidos.");
 		}
@@ -93,6 +95,35 @@ void ValidateArguments(const ArgumentParser& argParser)
 		if (filter.empty())
 		{
 			throw std::invalid_argument("Filter não pode estar em branco no modo Resize");
+		}
+	}
+
+	// Validar o modo Scale
+	if (bScaleMode)
+	{
+		auto amount = 0.0f;
+
+		try
+		{
+			amount = argParser.GetOptionAs<float>(Args::Options::Amount);
+		} 
+		catch (const std::invalid_argument&)
+		{
+			throw std::invalid_argument("O valor informado para Amount não é um número válido");
+		}
+
+
+		
+
+		// No modo escala o amount deve ser maior do que zero
+		if (amount <= 0.0f)
+		{
+			throw std::invalid_argument("Amount deve ser maior do que zero");
+		}
+
+		if (filter.empty())
+		{
+			throw std::invalid_argument("Filter não pode estar em branco no modo Scale");
 		}
 	}
 }
@@ -111,6 +142,7 @@ int main(int argc, char* argv[])
 	argParser.RegisterOption(Args::Options::Filter);
 	argParser.RegisterOption(Args::Options::Width);
 	argParser.RegisterOption(Args::Options::Height);
+	argParser.RegisterOption(Args::Options::Amount);
 
 	argParser.Parse(argc, argv);
 
