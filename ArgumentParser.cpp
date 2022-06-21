@@ -84,6 +84,16 @@ int ArgumentParser::GetOptionAsInt(const std::string& option) const
 	return -1;
 }
 
+void ArgumentParser::SetHelpMessage(const std::string& helpMessage)
+{
+	this->m_HelpMessage = helpMessage;
+}
+
+const std::string& ArgumentParser::GetHelpMessage() const
+{
+	return this->m_HelpMessage;
+}
+
 void ArgumentParser::Parse(int argc, char* argv[])
 {
 	if (argc > 1)

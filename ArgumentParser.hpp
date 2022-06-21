@@ -40,9 +40,14 @@ public:
 	// Faz o parse da lista de argumentos em argv
 	void Parse(int argc, char* argv[]);
 
+	void SetHelpMessage(const std::string& helpMessage);
+
+	const std::string& GetHelpMessage() const;
+
 private:
 	std::map<std::string, bool> m_Flags;
 	std::map<std::string, std::string> m_Options;
+	std::string m_HelpMessage;
 
 	// Obtém o valor de uma option obtida durante o parse
 	const std::string& GetOption(const std::string& option) const;
