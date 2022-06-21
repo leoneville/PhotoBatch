@@ -26,6 +26,8 @@ namespace Args
 		static constexpr const char* Amount = "amount";
 		static constexpr const char* Prefix = "prefix";
 		static constexpr const char* StartNumber = "startnumber";
+		static constexpr const char* From = "from";
+		static constexpr const char* To = "to";
 	}
 }
 
@@ -163,6 +165,33 @@ void ValidateArguments(const ArgumentParser& argParser)
 			throw std::invalid_argument("Prefix não pode estar em branco e não pode conter os seguintes caracteres: " + GetInvalidChars());
 		}
 	}
+
+	// Validar o modo Convert
+
+	if (bConvertMode)
+	{
+		const auto from = argParser.GetOptionAs<const std::string&>(Args::Options::From);
+		const auto to = argParser.GetOptionAs<const std::string&>(Args::Options::To);
+		const auto convertOptions = std::array<std::string, 2>{ "jpg", "png" };
+
+		const auto bIsFromValid = find(std::begin(convertOptions), std::end(convertOptions), from) != std::end(convertOptions);
+		const auto bIsToValid = find(std::begin(convertOptions), std::end(convertOptions), to) != std::end(convertOptions);
+
+		if (from.empty() || to.empty())
+		{
+			throw std::invalid_argument("From e To não podem estar em branco");
+		}
+
+		if (!bIsFromValid || !bIsToValid)
+		{
+			throw std::invalid_argument("From e To devem ser jpg ou png");
+		}
+
+		if (from == to)
+		{
+			throw std::invalid_argument("From e To deve ser diferentes");
+		}
+	}
 }
 
 int main(int argc, char* argv[])
@@ -186,6 +215,8 @@ int main(int argc, char* argv[])
 	argParser.RegisterOption(Args::Options::Amount);
 	argParser.RegisterOption(Args::Options::Prefix);
 	argParser.RegisterOption(Args::Options::StartNumber);
+	argParser.RegisterOption(Args::Options::From);
+	argParser.RegisterOption(Args::Options::To);
 
 	argParser.Parse(argc, argv);
 
