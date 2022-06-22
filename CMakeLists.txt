@@ -11,6 +11,8 @@ target_sources(
 		PhotoBatch.cpp
 		Utils.cpp
 		Utils.hpp
-)
+ "Unittests/TestArgumentParser.cpp")
 
 set_target_properties(PhotoBatch PROPERTIES CXX_STANDARD 17)
+
+add_subdirectory(Unittests)
