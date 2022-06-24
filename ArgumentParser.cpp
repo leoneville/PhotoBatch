@@ -24,6 +24,16 @@ void ArgumentParser::RegisterOption(const std::string& option)
 	}
 }
 
+bool ArgumentParser::IsFlagRegistered(const std::string& flag) const
+{
+	if (!flag.empty())
+	{
+		return this->m_Flags.count(flag) == 1;
+	}
+
+	return false;
+}
+
 bool ArgumentParser::GetFlag(const std::string& flag) const
 {
 	// if the flag argument is not empty...
