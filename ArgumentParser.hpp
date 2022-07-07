@@ -24,6 +24,9 @@ public:
 
 	// Retornar se a flag está ou não registrada
 	bool IsFlagRegistered(const std::string& flag) const;
+
+	// Retornar se a opção está ou não registrada
+	bool IsOptionRegistered(const std::string& option) const;
 	
 	// Obtém o valor de uma flag obtida durante o parse
 	bool GetFlag(const std::string& flag) const;

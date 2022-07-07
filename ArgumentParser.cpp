@@ -18,7 +18,7 @@ void ArgumentParser::RegisterFlag(const std::string& flag)
 
 void ArgumentParser::RegisterOption(const std::string& option)
 {
-	if (!option.empty())
+	if (!option.empty() && !Utils::HasWhitespaces(option))
 	{
 		this->m_Options[option] = "";
 	}
@@ -29,6 +29,16 @@ bool ArgumentParser::IsFlagRegistered(const std::string& flag) const
 	if (!flag.empty())
 	{
 		return this->m_Flags.count(flag) == 1;
+	}
+
+	return false;
+}
+
+bool ArgumentParser::IsOptionRegistered(const std::string& option) const
+{
+	if (!option.empty())
+	{
+		return this->m_Options.count(option) == 1;
 	}
 
 	return false;
