@@ -23,5 +23,5 @@ TEST(TestArgumentParser, RegisterFlag_Whitespace)
 
 	argParser.RegisterFlag("My Flag");
 
-	EXPECT_TRUE(argParser.IsFlagRegistered("My Flag"));
+	EXPECT_FALSE(argParser.IsFlagRegistered("My Flag"));
 }

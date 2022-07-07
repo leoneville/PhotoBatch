@@ -8,7 +8,7 @@ void ArgumentParser::RegisterFlag(const std::string& flag)
 {
 	// if the flag argument is not empty...
 	// se o argumento flag não estiver vazio...
-	if (!flag.empty())
+	if (!flag.empty() && !Utils::HasWhitespaces(flag))
 	{
 		// save the value in the flag key as false! Ex:. m_Flags["rename"] = false;
 		// salva o valor da chave flag como false Ex:. m_Flags["rename"] = false;
